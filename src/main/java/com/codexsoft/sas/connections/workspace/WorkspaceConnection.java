@@ -28,11 +28,11 @@ public class WorkspaceConnection implements AutoCloseable {
             ConnectionFactoryConfiguration cxfConfig = new ManualConnectionFactoryConfiguration(server);
             ConnectionFactoryManager cxfManager = new ConnectionFactoryManager();
             ConnectionFactoryInterface cxf = cxfManager.getFactory(cxfConfig);
-            ConnectionInterface cx = cxf.getConnection(connection.getUserName(), connection.getPassword());
-            org.omg.CORBA.Object obj = cx.getObject();
-            iWorkspace = IWorkspaceHelper.narrow(obj);
 
-            cx.close();
+            try(ConnectionInterface cx = cxf.getConnection(connection.getUserName(), connection.getPassword())){
+                org.omg.CORBA.Object obj = cx.getObject();
+                iWorkspace = IWorkspaceHelper.narrow(obj);
+            }
         }
 
         return iWorkspace;

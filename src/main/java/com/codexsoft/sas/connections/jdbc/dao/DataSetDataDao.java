@@ -52,10 +52,6 @@ public class DataSetDataDao {
             int limit,
             int offset
     ) throws Exception {
-        WorkspaceConnection workspaceConnection = jdbcConnection.getWorkspaceConnection();
-        workspaceConnection.submitSasCommand(OPTIONS_COMMAND, false);
-
-        Connection connection = jdbcConnection.getConnection();
 
         String filterString = generateFilterString(filter);
 
@@ -66,10 +62,15 @@ public class DataSetDataDao {
                 filterString
         );
 
-        try (Statement statement = connection.createStatement(
+        try ( WorkspaceConnection workspaceConnection = jdbcConnection.getWorkspaceConnection();
+             Connection connection = jdbcConnection.getConnection();
+             Statement statement = connection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY
-        )) {
+                ResultSet.CONCUR_READ_ONLY))
+        {
+
+            workspaceConnection.submitSasCommand(OPTIONS_COMMAND, false);
+
             if (limit == 0) {
                 limit = dataSetDataConfigModel.getDefaultFetchSize();
             }
@@ -107,7 +108,6 @@ public class DataSetDataDao {
             @NotNull String libraryName,
             @NotNull String datasetName
     ) throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         String truncateQuery = String.format(
                 "DELETE FROM %s.%s",
@@ -115,7 +115,8 @@ public class DataSetDataDao {
                 datasetName
         );
 
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = jdbcConnection.getConnection();
+             Statement statement = connection.createStatement()) {
             return statement.executeUpdate(truncateQuery);
         }
     }
@@ -126,7 +127,6 @@ public class DataSetDataDao {
             @NotNull List<Map<String, Object>> data,
             @NotNull String byKey
     ) throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         List<Object> dataKeys = data.stream()
                 .map(item -> item.get(byKey))
@@ -146,7 +146,8 @@ public class DataSetDataDao {
                 dataKeysString
         );
 
-        try (Statement statement = connection.createStatement()){
+        try (Connection connection = jdbcConnection.getConnection();
+             Statement statement = connection.createStatement()){
             return statement.executeUpdate(deleteQuery);
         }
     }
@@ -156,7 +157,6 @@ public class DataSetDataDao {
             @NotNull String datasetName,
             @NotNull List<Map<String, Object>> data
     ) throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         String statements = generateInsertStatements(data);
 
@@ -167,7 +167,8 @@ public class DataSetDataDao {
                 statements
         );
 
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = jdbcConnection.getConnection();
+             Statement statement = connection.createStatement()) {
             return statement.executeUpdate(insertQuery);
         }
     }

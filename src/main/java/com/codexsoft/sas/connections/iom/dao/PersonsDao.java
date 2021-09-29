@@ -40,19 +40,18 @@ public class PersonsDao extends BaseDao {
                 + "    </Template>"
                 + "</Templates>";
 
-        IOMI iOMI = iomConnection.getIOMIConnection();
-        iOMI.GetMetadataObjects(
-                repositoryId,
-                "Person",
-                outputMeta,
-                "SAS",
-                MetadataUtil.OMI_TEMPLATE | MetadataUtil.OMI_GET_METADATA | MetadataUtil.OMI_ALL_SIMPLE,
-                template
-        );
-
-        PersonParser parser = context.getBean(PersonParser.class);
-        
-        return parser.parse(outputMeta.value);
+        try (IOMI iOMI = iomConnection.getIOMIConnection()){
+            iOMI.GetMetadataObjects(
+                    repositoryId,
+                    "Person",
+                    outputMeta,
+                    "SAS",
+                    MetadataUtil.OMI_TEMPLATE | MetadataUtil.OMI_GET_METADATA | MetadataUtil.OMI_ALL_SIMPLE,
+                    template
+            );
+        }
+            PersonParser parser = context.getBean(PersonParser.class);
+            return parser.parse(outputMeta.value);
     }
 
     public Person getPersonByName(String repositoryId, String personName) throws Exception {

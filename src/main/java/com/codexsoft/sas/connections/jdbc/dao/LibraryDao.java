@@ -23,13 +23,13 @@ public class LibraryDao extends BaseDao {
     }
 
     public List<Library> getLibraries() throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         String queryString = ""
                 + " SELECT DISTINCT libname, engine, path, level, readonly, sequential, temp"
                 + " FROM SASHELP.VLIBNAM";
 
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = jdbcConnection.getConnection();
+             Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(queryString);
 
             return new ArrayList<Library>() {{

@@ -26,14 +26,14 @@ public class DataSetDao extends BaseDao {
     }
 
     public List<DataSet> getDatasets(@NotNull String libraryName) throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         String queryString = ""
                 + " SELECT *"
                 + " FROM SASHELP.VTABLE"
                 + " WHERE libname = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(queryString)) {
+        try (Connection connection = jdbcConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(queryString)) {
             statement.setString(1, libraryName);
 
             ResultSet result = statement.executeQuery();
@@ -56,7 +56,6 @@ public class DataSetDao extends BaseDao {
     }
 
     public int deleteDataset(String libraryName, String datasetName) throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         String dropQuery = String.format(
                 "DROP TABLE %s.%s",
@@ -64,7 +63,8 @@ public class DataSetDao extends BaseDao {
                 datasetName
         );
 
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = jdbcConnection.getConnection();
+             Statement statement = connection.createStatement()) {
             return statement.executeUpdate(dropQuery);
         }
     }

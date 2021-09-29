@@ -27,7 +27,6 @@ public class DataSetColumnDao extends BaseDao {
             @NotNull String libraryName,
             @NotNull String datasetName
     ) throws Exception {
-        Connection connection = jdbcConnection.getConnection();
 
         String queryString = ""
                 + " SELECT *"
@@ -35,7 +34,8 @@ public class DataSetColumnDao extends BaseDao {
                 + " WHERE libname = ? AND memname = ?"
                 + " ORDER BY varnum ASC";
 
-        try (PreparedStatement statement = connection.prepareStatement(queryString)) {
+        try (Connection connection = jdbcConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(queryString)) {
             statement.setString(1, libraryName);
             statement.setString(2, datasetName);
 

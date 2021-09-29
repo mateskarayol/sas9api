@@ -57,6 +57,8 @@ public class IOMConnection implements AutoCloseable {
             } else {
                 throw new Exception(e.getLocalizedMessage());
             }
+        } finally {
+            close();
         }
     }
 
